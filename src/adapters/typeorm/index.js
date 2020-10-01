@@ -206,7 +206,7 @@ const Adapter = (typeOrmConfig, options = {}) => {
     }
 
     async function getAccounts (userId) {
-      debugMessage('GET_ACCOUNTS', userId)
+      debug('GET_ACCOUNTS', userId)
       try {
         const accounts = await connection.getRepository(Account).find({ userId })
         if (!accounts) { return null }
@@ -218,7 +218,7 @@ const Adapter = (typeOrmConfig, options = {}) => {
     }
 
     async function getAccount (userId, providerId) {
-      debugMessage('GET_ACCOUNT', userId)
+      debug('GET_ACCOUNT', userId)
       try {
         const account = await connection.getRepository(Account).findOne({ userId, providerType: 'oauth', providerId })
         if (!account) { return null }
