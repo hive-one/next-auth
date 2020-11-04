@@ -130,6 +130,16 @@ const Adapter = (typeOrmConfig, options = {}) => {
       }
     }
 
+    async function getUsers () {
+      debug('GET_USERS')
+      try {
+        return manager.find(User)
+      } catch (error) {
+        logger.error('GET_USERS_ERROR', error)
+        return Promise.reject(new Error('GET_USERS_ERROR', error))
+      }
+    }
+
     async function getUser (id) {
       debug('GET_USER', id)
 
@@ -380,6 +390,7 @@ const Adapter = (typeOrmConfig, options = {}) => {
 
     return Promise.resolve({
       createUser,
+      getUsers,
       getUser,
       getUserByEmail,
       getUserByProviderAccountId,
