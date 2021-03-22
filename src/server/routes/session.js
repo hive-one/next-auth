@@ -59,13 +59,16 @@ export default async function session (req, res) {
     }
   } else {
     try {
-      const { getUser, getSession, updateSession } = await adapter.getAdapter(req.options)
+      const { getUser, getSession, updateSession, getAccounts } = await adapter.getAdapter(req.options)
       const session = await getSession(sessionToken)
       if (session) {
         // Trigger update to session object to update session expiry
         await updateSession(session)
 
-        const user = await getUser(session.userId)
+        const user = await getUser(session.userId);
+
+        const accounts = await getAccounts(session.userId);
+        const account = accounts[0];
 
         // By default, only exposes a limited subset of information to the client
         // as needed for presentation purposes (e.g. "you are logged in as…").
@@ -74,6 +77,9 @@ export default async function session (req, res) {
             name: user.name,
             email: user.email,
             image: user.image
+          },
+          account: {
+            id: account.providerAccountId
           },
           accessToken: session.accessToken,
           expires: session.expires
