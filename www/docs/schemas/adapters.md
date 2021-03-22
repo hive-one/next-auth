@@ -13,6 +13,7 @@ Configure your database by creating the tables and columns to match the schema e
 
 * [MySQL Schema](/schemas/mysql)
 * [Postgres Schema](/schemas/postgres)
+* [Microsoft SQL Server Schema](/schemas/mssql)
 
 ## TypeORM Adapter
 
@@ -49,18 +50,18 @@ The tutorial [Custom models with TypeORM](/tutorials/typeorm-custom-models) expl
 :::tip
 The `synchronize` option in TypeORM will generate SQL that exactly matches the documented schemas for MySQL and Postgres.
 
-However, it should not be enabled against production databases as may cause dataloss if the configured schema does not match the expected schema!
+However, it should not be enabled against production databases as it may cause data loss if the configured schema does not match the expected schema!
 :::
 
 ## Prisma Adapter
 
-You can also use NextAuth.js with [Prisma](https://www.prisma.io/docs/).
+You can also use NextAuth.js with the experimental adapter for [Prisma 2](https://www.prisma.io/docs/).
 
 To use this adapter, you need to install Prisma Client and Prisma CLI:
 
 ```
-npm i @prisma/client
-npm add -D @prisma/cli
+npm install @prisma/client
+npm install prisma --save-dev
 ```
 
 Configure your NextAuth.js to use the Prisma adapter:
@@ -73,7 +74,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const options = {
+export default NextAuth({
   providers: [
     Providers.Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -81,9 +82,7 @@ const options = {
     })
   ],
   adapter: Adapters.Prisma.Adapter({ prisma }),
-}
-
-export default (req, res) => NextAuth(req, res, options)
+})
 ```
 
 :::tip
@@ -92,7 +91,7 @@ While Prisma includes an experimental feature in the migration command that is a
 
 ### Prisma Schema
 
-Create a `schema.prisma` file similar to this one:
+Create a schema file in `prisma/schema.prisma` similar to this one:
 
 ```json title="schema.prisma"
 generator client {
@@ -180,36 +179,46 @@ datasource db {
 
 ### Generate Client
 
-Once you have saved your schema, you can run the Prisma CLI to generate the Prisma Client:
+Once you have saved your schema, use the Prisma CLI to generate the Prisma Client:
 
 ```
-npx @prisma/cli generate
+npx prisma generate
 ```
+
+To configure you database to use the new schema (i.e. create tables and columns) use the `primsa migrate` command:
+
+```
+npx prisma migrate dev --preview-feature
+```
+
+To generate a schema in this way with the above example code, you will need to specify your datbase connection string in the environment variable `DATABASE_URL`. You can do this by setting it in a `.env` file at the root of your project.
+
+As this feature is experimental in Prisma, it is behind a feature flag. You should check your database schema manually after using this option. See the [Prisma documentation](https://www.prisma.io/docs/) for information on how to use `prisma migrate`.
 
 ### Custom Models
 
-You can add properties to the schema and map them to any database colum names you wish, but you should not change the base properties or types defined in the example schema.
+You can add properties to the schema and map them to any database column names you wish, but you should not change the base properties or types defined in the example schema.
 
-The model names themselves can be changed with a configuration option, and the datasource can be changed to anything supported by Prisma. 
+The model names themselves can be changed with a configuration option, and the datasource can be changed to anything supported by Prisma.
 
 You can use custom model names by using the `modelMapping` option (shown here with default values).
 
 ```javascript title="pages/api/auth/[...nextauth].js"
 ...
-adapter: Adapters.Prisma.Adapter({ 
+adapter: Adapters.Prisma.Adapter({
   prisma,
   modelMapping: {
     User: 'user',
     Account: 'account',
     Session: 'session',
     VerificationRequest: 'verificationRequest'
-  }  
+  }
 })
 ...
 ```
 
 :::tip
-If you experience issues with Prisma opening too many database connections opening in local development mode (e.g. due to Hot Module Reloading) you can use an approach like this when initalising the Prisma Client:
+If you experience issues with Prisma opening too many database connections in local development mode (e.g. due to Hot Module Reloading) you can use an approach like this when initalising the Prisma Client:
 
 ```javascript title="pages/api/auth/[...nextauth].js"
 let prisma
@@ -228,4 +237,4 @@ if (process.env.NODE_ENV === "production") {
 
 ## Custom Adapter
 
-See the tutorial for [creating a database adapter](/tutorials/creating-a-database-adapter) for more information on how to create a custom adapter.
+ See the tutorial for [creating a database adapter](/tutorials/creating-a-database-adapter) for more information on how to create a custom adapter. Have a look at the [adapters repository](https://github.com/nextauthjs/adapters) to see community maintained custom adapters or add your own. 

@@ -14,6 +14,8 @@ node_modules
 
 # Misc
 .DS_Store
+
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -23,10 +25,32 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Docusaurus
-www/build
+yarn.lock
 
-#VS
+# Dependencies
+node_modules
+
+# Build dirs
+.next
+/build
+/dist
+/www/build
+
+# Generated files
+.docusaurus
+.cache-loader
+.next
+www/providers.json
+
+# VS
 /.vs/slnx.sqlite-journal
 /.vs/slnx.sqlite
 /.vs
+.vscode
+
+# GitHub Actions runner
+/actions-runner
+/_work
+
+# Prisma migrations
+/prisma/migrations
