@@ -276,6 +276,24 @@ const Adapter = (typeOrmConfig, options = {}) => {
       }
     }
 
+    async function getSessionByAccessToken (accessToken) {
+      debug('GET_SESSION', sessionToken)
+      try {
+        const session = await manager.findOne(Session, { accessToken })
+
+        // Check session has not expired (do not return it if it has)
+        if (session && session.expires && new Date() > new Date(session.expires)) {
+          // @TODO Delete old sessions from database
+          return null
+        }
+
+        return session
+      } catch (error) {
+        logger.error('GET_SESSION_ERROR', error)
+        return Promise.reject(new Error('GET_SESSION_ERROR', error))
+      }
+    }
+
     async function updateSession (session, force) {
       debug('UPDATE_SESSION', session)
       try {
@@ -402,6 +420,7 @@ const Adapter = (typeOrmConfig, options = {}) => {
       getAccount,
       createSession,
       getSession,
+      getSessionByAccessToken,
       updateSession,
       deleteSession,
       createVerificationRequest,
