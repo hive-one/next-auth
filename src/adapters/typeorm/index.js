@@ -277,7 +277,7 @@ const Adapter = (typeOrmConfig, options = {}) => {
     }
 
     async function getSessionByAccessToken (accessToken) {
-      debug('GET_SESSION', sessionToken)
+      debug('GET_SESSION_BY_ACCESS_TOKEN', accessToken)
       try {
         const session = await manager.findOne(Session, { accessToken })
 
