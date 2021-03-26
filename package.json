@@ -1,9 +1,8 @@
 {
-  "name": "next-auth",
+  "name": "@hive-one/next-auth",
   "version": "0.0.0-semantically-released",
   "description": "Authentication for Next.js",
   "homepage": "https://next-auth.js.org",
-  "repository": "https://github.com/nextauthjs/next-auth.git",
   "author": "Iain Collins <me@iaincollins.com>",
   "main": "index.js",
   "scripts": {
@@ -117,5 +116,9 @@
       "type": "github",
       "url": "https://github.com/sponsors/balazsorban44"
     }
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hive-one/next-auth"
+  }
 }
